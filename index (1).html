@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Моя жизнь — Ангелина</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F2EFE9;--card:#FAFAF7;--dark:#1E1C19;--accent:#8B6F47;--accent2:#B8956A;--gold:#C4A97A;
+  --green:#4A6E4A;--gl:#E8F0E8;--red:#A84848;--rl:#F5EAEA;--blue:#3D6070;--bl:#E6EEF2;
+  --orange:#B06030;--ol:#F5EDE5;--muted:#7A7060;--border:#E0DAD0;--shadow:0 4px 24px rgba(30,28,25,0.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--dark);font-size:14px;line-height:1.6;min-height:100vh}
+
+/* HEADER */
+.header{background:var(--dark);color:#fff;padding:18px 20px 0;position:sticky;top:0;z-index:100}
+.header-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.h-left h1{font-family:'Cormorant Garamond',serif;font-size:1.6em;font-weight:400;letter-spacing:-0.5px}
+.h-left h1 em{font-style:italic;color:var(--gold)}
+.h-date{font-size:.7em;opacity:.5;font-weight:300;margin-top:2px;letter-spacing:.08em;text-transform:uppercase}
+.mood-pill{background:rgba(255,255,255,.1);border-radius:30px;padding:7px 13px;cursor:pointer;text-align:center;flex-shrink:0}
+.mood-pill .me{font-size:1.4em;display:block}
+.mood-pill .ms{font-size:.62em;opacity:.6;display:block;margin-top:1px}
+.mood-pill .mv{font-size:.82em;font-weight:600;display:block}
+
+/* TABS */
+.tabs{display:flex;border-top:1px solid rgba(255,255,255,.08);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{flex:1;min-width:60px;padding:9px 4px;text-align:center;font-size:.62em;font-weight:600;color:rgba(255,255,255,.35);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.04em;text-transform:uppercase;transition:all .2s}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* CONTENT */
+.content{padding:12px;max-width:680px;margin:0 auto}
+.section{display:none}.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--card);border-radius:16px;padding:15px;margin-bottom:10px;box-shadow:var(--shadow);border:1px solid var(--border)}
+.card-title{font-size:.63em;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:11px}
+
+/* SUMMARY */
+.sum-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+.sc{background:var(--card);border-radius:11px;padding:10px 5px;text-align:center;border:1px solid var(--border);box-shadow:var(--shadow)}
+.sc-v{font-size:1.25em;font-weight:600;font-family:'Cormorant Garamond',serif;display:block}
+.sc-l{font-size:.58em;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+
+/* PROGRESS */
+.prog-wrap{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.prog-bar{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--green);border-radius:2px;transition:width .4s}
+.prog-lbl{font-size:.68em;font-weight:700;color:var(--muted);white-space:nowrap}
+
+/* TIMELINE */
+.timeline{position:relative}
+.timeline::before{content:'';position:absolute;left:36px;top:0;bottom:0;width:1.5px;background:var(--border);z-index:0}
+.tl-item{display:flex;gap:10px;margin-bottom:7px;position:relative}
+.tl-time{width:30px;text-align:right;font-size:.63em;font-weight:700;color:var(--muted);padding-top:10px;flex-shrink:0;line-height:1.2}
+.tl-dot{width:13px;height:13px;border-radius:50%;flex-shrink:0;margin-top:11px;position:relative;z-index:1;border:2px solid var(--border);background:var(--card)}
+.tl-dot.dd{background:var(--green);border-color:var(--green)}
+.tl-dot.df{background:var(--orange);border-color:var(--orange);box-shadow:0 0 0 3px var(--ol)}
+.tl-dot.du{background:var(--red);border-color:var(--red)}
+.tl-dot.dm{background:var(--blue);border-color:var(--blue)}
+.tl-body{flex:1;border-radius:11px;padding:8px 11px;cursor:pointer;transition:all .2s;border:1.5px solid transparent;background:var(--bg)}
+.tl-body:hover{border-color:var(--border)}
+.tl-body.cd{opacity:.45}.tl-body.cd .tl-name{text-decoration:line-through}
+.tl-body.cf{background:var(--ol);border-color:#D08050}
+.tl-body.cu{background:var(--rl);border-color:var(--red)}
+.tl-body.cm{background:var(--bl);border-color:#5A90A8}
+.tl-body.cb{cursor:default;opacity:.6}
+.tl-name{font-size:.85em;font-weight:600}
+.tl-meta{font-size:.7em;color:var(--muted);margin-top:1px}
+.badge{display:inline-block;padding:1px 6px;border-radius:7px;font-size:.65em;font-weight:700;margin-left:4px;vertical-align:middle}
+.br{background:var(--rl);color:var(--red)}.bb{background:var(--bl);color:var(--blue)}.bo{background:var(--ol);color:var(--orange)}
+
+/* WATER */
+.water-track{display:flex;gap:5px;flex-wrap:wrap;margin:7px 0}
+.w-cup{width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.95em;transition:all .18s;background:var(--bg)}
+.w-cup.filled{background:var(--bl);border-color:var(--blue)}
+.w-lbl{font-size:.72em;color:var(--muted);margin-top:3px}
+
+/* MOOD */
+.mood-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.mood-btn{aspect-ratio:1;border:1.5px solid var(--border);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;background:var(--bg);gap:2px}
+.mood-btn .me2{font-size:1.4em}.mood-btn .mn{font-size:.6em;font-weight:700;color:var(--muted)}
+.mood-btn.sel{border-color:var(--accent2);background:var(--ol);transform:scale(1.05)}
+
+/* CHIPS */
+.gi-row{margin-bottom:11px}
+.gi-lbl{font-size:.76em;font-weight:600;color:var(--muted);margin-bottom:6px;display:block}
+.gi-opts{display:flex;flex-wrap:wrap;gap:5px}
+.chip{padding:5px 10px;border-radius:20px;border:1.5px solid var(--border);font-size:.73em;font-weight:600;cursor:pointer;transition:all .18s;background:var(--bg)}
+.chip.sg{background:var(--gl);border-color:var(--green);color:var(--green)}
+.chip.so{background:var(--ol);border-color:var(--orange);color:var(--orange)}
+.chip.sr{background:var(--rl);border-color:var(--red);color:var(--red)}
+
+/* TEXTAREA */
+.ta{width:100%;border:1.5px solid var(--border);border-radius:11px;padding:8px 10px;font-family:'Jost',sans-serif;font-size:.84em;outline:none;background:var(--bg);resize:vertical;min-height:58px;color:var(--dark)}
+.ta:focus{border-color:var(--accent)}
+
+/* SPORT */
+.sport-day{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)}
+.sport-day:last-child{border-bottom:none}
+.sp-name{font-size:.83em;font-weight:600}.sp-act{font-size:.71em;color:var(--muted)}
+.sp-btns{display:flex;gap:5px}
+.sp-btn{width:29px;height:29px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;font-size:.82em;display:flex;align-items:center;justify-content:center;transition:all .18s}
+.sp-btn.done{background:var(--gl);border-color:var(--green)}.sp-btn.skip{background:var(--rl);border-color:var(--red)}.sp-btn.alt{background:var(--ol);border-color:var(--orange)}
+
+/* TOGGLE */
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--border);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle::after{content:'';position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on{background:var(--green)}.toggle.on::after{transform:translateX(18px)}
+.supp-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.supp-row:last-child{border-bottom:none}
+.supp-n{font-size:.82em;font-weight:600}.supp-t{font-size:.68em;color:var(--muted);margin-top:1px}
+.badge-warn{display:inline-block;padding:1px 5px;border-radius:7px;font-size:.63em;font-weight:700;background:var(--ol);color:var(--orange);margin-left:3px}
+
+/* ADD TASK */
+.add-row{display:flex;gap:6px;margin-top:9px}
+.add-row input{flex:1;border:1.5px solid var(--border);border-radius:9px;padding:7px 10px;font-family:'Jost',sans-serif;font-size:.83em;outline:none;background:var(--bg);color:var(--dark)}
+.add-row input:focus{border-color:var(--accent)}
+.btn{background:var(--accent);color:#fff;border:none;border-radius:9px;padding:7px 13px;font-size:.8em;font-weight:600;cursor:pointer;font-family:'Jost',sans-serif;transition:background .2s}
+.btn:hover{background:var(--accent2)}
+
+/* FOOD */
+.meal-block{border-bottom:1px solid var(--border);padding:10px 0}.meal-block:last-child{border-bottom:none}
+.meal-tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;font-size:.66em;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.mt-b{background:#FFF8E6;color:#9A7010}.mt-l{background:var(--bl);color:var(--blue)}.mt-d{background:#F0EBF8;color:#5A3483}.mt-s{background:var(--ol);color:var(--orange)}
+.food-entry{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.food-photo{width:46px;height:46px;border-radius:8px;flex-shrink:0;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:1.2em;overflow:hidden;border:1px solid var(--border)}
+.food-photo img{width:100%;height:100%;object-fit:cover}
+.food-n{font-size:.84em;font-weight:600}
+.food-g{display:flex;gap:3px;margin-top:2px}
+.food-gb{font-size:.65em;padding:1px 5px;border-radius:7px;font-weight:600}
+.fgok{background:var(--gl);color:var(--green)}.fgwarn{background:var(--ol);color:var(--orange)}.fgbad{background:var(--rl);color:var(--red)}
+.food-del{color:#ccc;cursor:pointer;font-size:.95em;margin-left:auto;padding:3px;flex-shrink:0}
+.food-del:hover{color:var(--red)}
+.upload-area{border:1.5px dashed var(--border);border-radius:10px;padding:10px;text-align:center;cursor:pointer;position:relative;margin:5px 0}
+.upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.upload-hint{font-size:.73em;color:var(--muted)}
+.upload-hint span{display:block;font-size:1.2em;margin-bottom:2px}
+.note-row{display:flex;gap:5px;margin-top:5px;align-items:center}
+.note-row input{flex:1;border:1.5px solid var(--border);border-radius:9px;padding:6px 9px;font-family:'Jost',sans-serif;font-size:.81em;outline:none;background:var(--bg);color:var(--dark)}
+.note-row input:focus{border-color:var(--accent)}
+select{border:1.5px solid var(--border);border-radius:8px;padding:4px 6px;font-family:'Jost',sans-serif;font-size:.76em;outline:none;background:var(--bg);cursor:pointer;color:var(--dark)}
+.info-box{padding:8px 11px;border-radius:9px;font-size:.76em;margin-top:7px;background:var(--bl);color:var(--blue)}
+
+/* TASKS */
+.task-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.task-item:last-child{border-bottom:none}
+.task-check{width:19px;height:19px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.76em;transition:all .2s;margin-top:1px}
+.task-item.done .task-check{background:var(--green);border-color:var(--green);color:#fff}
+.task-item.done .task-txt{text-decoration:line-through;opacity:.4}
+.task-txt{font-size:.86em;font-weight:500;flex:1}
+
+/* SAVE BAR */
+.save-bar{background:var(--dark);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.save-info .save-title{font-size:.83em;font-weight:600;color:#fff;margin-bottom:2px}
+.save-status{font-size:.73em;color:rgba(255,255,255,.45)}
+.save-status.ok{color:#7DBF7D}.save-status.err{color:#E08080}
+.btn-save{background:var(--gold);color:var(--dark);border:none;border-radius:11px;padding:10px 20px;font-size:.86em;font-weight:700;cursor:pointer;font-family:'Jost',sans-serif;transition:all .2s;flex-shrink:0;white-space:nowrap}
+.btn-save:hover{background:#D4B98A}
+.btn-save:disabled{opacity:.5;cursor:not-allowed}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;width:11px;height:11px;border:2px solid rgba(30,28,25,.3);border-top-color:var(--dark);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:3px}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.dash-card{background:var(--card);border-radius:14px;padding:14px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.dash-card h3{font-size:.68em;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin-bottom:10px}
+.dash-val{font-size:2em;font-weight:600;font-family:'Cormorant Garamond',serif;color:var(--dark);display:block}
+.dash-sub{font-size:.72em;color:var(--muted);margin-top:2px}
+.trend-up{color:var(--green)}.trend-down{color:var(--red)}.trend-ok{color:var(--orange)}
+.chart-bar-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.chart-bar-label{font-size:.68em;color:var(--muted);width:20px;text-align:right;flex-shrink:0}
+.chart-bar-wrap{flex:1;height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.chart-bar-fill{height:100%;border-radius:4px;background:var(--green);transition:width .6s}
+.chart-bar-val{font-size:.68em;color:var(--muted);width:28px;text-align:left;flex-shrink:0}
+.gi-week-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.week-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;font-size:.72em}
+.week-day{color:var(--muted);width:22px}
+.full-width{grid-column:span 2}
+.empty-state{text-align:center;padding:24px 12px;color:var(--muted);font-size:.82em}
+.empty-state .ei{font-size:2em;margin-bottom:8px;display:block}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="h-left">
+      <h1>Моя <em>жизнь</em></h1>
+      <div class="h-date" id="hDate"></div>
+    </div>
+    <div class="mood-pill" onclick="goMood()">
+      <span class="me" id="hEmoji">🌿</span>
+      <span class="ms">состояние</span>
+      <span class="mv" id="hScore">—</span>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('work',this)">💼 День</div>
+    <div class="tab" onclick="switchTab('health',this)">🌿 Здоровье</div>
+    <div class="tab" onclick="switchTab('food',this)">🍽 Питание</div>
+    <div class="tab" onclick="switchTab('sport',this)">💪 Спорт</div>
+    <div class="tab" onclick="switchTab('supps',this)">💊 БАДы</div>
+    <div class="tab" onclick="switchTab('dash',this)">📊 Дашборд</div>
+  </div>
+</div>
+
+<div class="content">
+
+<!-- WORK -->
+<div class="section active" id="section-work">
+  <div class="sum-row">
+    <div class="sc"><span class="sc-v" id="w-done">0</span><div class="sc-l">сделано</div></div>
+    <div class="sc"><span class="sc-v" id="w-total">0</span><div class="sc-l">задач</div></div>
+    <div class="sc"><span class="sc-v" id="w-pct">0%</span><div class="sc-l">прогресс</div></div>
+    <div class="sc"><span class="sc-v" id="w-water">0</span><div class="sc-l">стаканов</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 Расписание дня</div>
+    <div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div><div class="prog-lbl" id="prog-lbl">0 / 0</div></div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚪ Личные задачи</div>
+    <div id="personal-tasks"></div>
+    <div class="add-row"><input id="personal-inp" placeholder="Добавить задачу..." onkeydown="if(event.key==='Enter')addPersonal()"><button class="btn" onclick="addPersonal()">+</button></div>
+  </div>
+  <div class="card">
+    <div class="card-title">💧 Вода — 2 литра</div>
+    <div class="water-track" id="waterTrack"></div>
+    <div class="w-lbl" id="wLbl">0 мл из 2000 мл</div>
+    <div class="prog-bar" style="margin-top:4px"><div class="prog-fill" id="wProg" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📝 Заметки дня</div>
+    <textarea class="ta" id="day-notes" placeholder="Договорённости, вопросы, итоги..."></textarea>
+  </div>
+  <div class="save-bar">
+    <div class="save-info">
+      <div class="save-title">💾 Сохранить день</div>
+      <div class="save-status" id="saveStatus">Нажми в конце дня</div>
+    </div>
+    <button class="btn-save" id="saveBtn" onclick="saveDay()">Сохранить</button>
+  </div>
+</div>
+
+<!-- HEALTH -->
+<div class="section" id="section-health">
+  <div class="card" id="moodCard">
+    <div class="card-title">🌿 Общее состояние</div>
+    <div class="mood-grid">
+      <div class="mood-btn" onclick="setMood(2,this)"><span class="me2">😔</span><span class="mn">1–2</span></div>
+      <div class="mood-btn" onclick="setMood(4,this)"><span class="me2">😕</span><span class="mn">3–4</span></div>
+      <div class="mood-btn" onclick="setMood(6,this)"><span class="me2">😐</span><span class="mn">5–6</span></div>
+      <div class="mood-btn" onclick="setMood(8,this)"><span class="me2">🙂</span><span class="mn">7–8</span></div>
+      <div class="mood-btn" onclick="setMood(10,this)"><span class="me2">😊</span><span class="mn">9–10</span></div>
+    </div>
+    <textarea class="ta" id="moodNote" placeholder="Что влияет на состояние?"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title">🌙 Сон</div>
+    <div class="gi-row"><span class="gi-lbl">Качество</span><div class="gi-opts" id="sleep-q"><div class="chip" onclick="selChip(this,'sleep-q','sg')">😴 Отлично</div><div class="chip" onclick="selChip(this,'sleep-q','so')">😶 Норм</div><div class="chip" onclick="selChip(this,'sleep-q','sr')">😵 Плохо</div></div></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:7px"><span class="gi-lbl" style="margin:0;white-space:nowrap">Часов спала:</span><input type="number" min="3" max="12" step="0.5" id="sleep-h" placeholder="8" style="width:58px;border:1.5px solid var(--border);border-radius:8px;padding:5px 8px;font-size:.88em;font-family:Jost,sans-serif;background:var(--bg);outline:none;color:var(--dark)"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">🫁 ЖКТ</div>
+    <div class="gi-row"><span class="gi-lbl">Стул</span><div class="gi-opts" id="gi-stool"><div class="chip" onclick="selChip(this,'gi-stool','sg')">✅ Норма</div><div class="chip" onclick="selChip(this,'gi-stool','so')">⚠️ Задержка</div><div class="chip" onclick="selChip(this,'gi-stool','sr')">🔴 Проблема</div><div class="chip" onclick="selChip(this,'gi-stool','so')">🕐 Не было</div></div></div>
+    <div class="gi-row"><span class="gi-lbl">Вздутие</span><div class="gi-opts" id="gi-bloat"><div class="chip" onclick="selChip(this,'gi-bloat','sg')">✅ Нет</div><div class="chip" onclick="selChip(this,'gi-bloat','so')">⚠️ Умеренное</div><div class="chip" onclick="selChip(this,'gi-bloat','sr')">🔴 Сильное</div></div></div>
+    <div class="gi-row"><span class="gi-lbl">Газы</span><div class="gi-opts" id="gi-gas"><div class="chip" onclick="selChip(this,'gi-gas','sg')">✅ Нет</div><div class="chip" onclick="selChip(this,'gi-gas','so')">⚠️ Немного</div><div class="chip" onclick="selChip(this,'gi-gas','sr')">🔴 Много</div></div></div>
+    <div class="gi-row"><span class="gi-lbl">Боль</span><div class="gi-opts" id="gi-pain"><div class="chip" onclick="selChip(this,'gi-pain','sg')">✅ Нет</div><div class="chip" onclick="selChip(this,'gi-pain','so')">⚠️ Есть</div><div class="chip" onclick="selChip(this,'gi-pain','sr')">🔴 Сильная</div></div></div>
+    <textarea class="ta" id="gi-note" placeholder="После чего? Связь с едой?"></textarea>
+  </div>
+  <div class="card">
+    <div class="card-title">⚡ Энергия</div>
+    <div class="gi-row"><div class="gi-opts" id="energy"><div class="chip" onclick="selChip(this,'energy','sr')">🪫 Мало</div><div class="chip" onclick="selChip(this,'energy','so')">🔋 Средне</div><div class="chip" onclick="selChip(this,'energy','sg')">⚡ Много</div><div class="chip" onclick="selChip(this,'energy','sg')">🚀 Огонь</div></div></div>
+    <textarea class="ta" id="symptoms" placeholder="Симптомы, жалобы..." style="margin-top:8px"></textarea>
+  </div>
+</div>
+
+<!-- FOOD -->
+<div class="section" id="section-food">
+  <div class="card">
+    <div class="card-title">📸 Дневник питания</div>
+    <div class="meal-block"><div class="meal-tag mt-b">☀️ Завтрак · 7:00–8:00</div><div id="food-breakfast"></div><div class="upload-area"><input type="file" accept="image/*" onchange="handlePhoto(event,'breakfast')"><div class="upload-hint"><span>📷</span>Прикрепить фото</div></div><div class="note-row"><input id="fn-breakfast" placeholder="Что ела..."><select id="fg-breakfast"><option value="">ЖКТ</option><option value="ок">✅ ок</option><option value="дискомфорт">⚠️ дискомфорт</option><option value="плохо">🔴 плохо</option></select><button class="btn" style="padding:5px 9px" onclick="addFood('breakfast')">+</button></div></div>
+    <div class="meal-block"><div class="meal-tag mt-l">🌞 Обед · 13:00–14:00</div><div id="food-lunch"></div><div class="upload-area"><input type="file" accept="image/*" onchange="handlePhoto(event,'lunch')"><div class="upload-hint"><span>📷</span>Прикрепить фото</div></div><div class="note-row"><input id="fn-lunch" placeholder="Что ела..."><select id="fg-lunch"><option value="">ЖКТ</option><option value="ок">✅ ок</option><option value="дискомфорт">⚠️ дискомфорт</option><option value="плохо">🔴 плохо</option></select><button class="btn" style="padding:5px 9px" onclick="addFood('lunch')">+</button></div></div>
+    <div class="meal-block"><div class="meal-tag mt-s">🍫 Перекус</div><div id="food-snack"></div><div class="upload-area"><input type="file" accept="image/*" onchange="handlePhoto(event,'snack')"><div class="upload-hint"><span>📷</span>Прикрепить фото</div></div><div class="note-row"><input id="fn-snack" placeholder="Перекус..."><select id="fg-snack"><option value="">ЖКТ</option><option value="ок">✅ ок</option><option value="дискомфорт">⚠️ дискомфорт</option><option value="плохо">🔴 плохо</option></select><button class="btn" style="padding:5px 9px" onclick="addFood('snack')">+</button></div></div>
+    <div class="meal-block"><div class="meal-tag mt-d">🌙 Ужин · до 20:30</div><div id="food-dinner"></div><div class="upload-area"><input type="file" accept="image/*" onchange="handlePhoto(event,'dinner')"><div class="upload-hint"><span>📷</span>Прикрепить фото</div></div><div class="note-row"><input id="fn-dinner" placeholder="Что ела..."><select id="fg-dinner"><option value="">ЖКТ</option><option value="ок">✅ ок</option><option value="дискомфорт">⚠️ дискомфорт</option><option value="плохо">🔴 плохо</option></select><button class="btn" style="padding:5px 9px" onclick="addFood('dinner')">+</button></div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">⚠️ FODMAP</div>
+    <div style="font-size:.77em;line-height:1.9;color:var(--muted)"><span style="color:var(--red)">⛔</span> Лактоза · свекла/тыква большой порцией · сырые лук/капуста · бобовые · олигофруктоза<br><span style="color:var(--orange)">⚠️</span> Сушёная клюква · магазинные «полезные» вафли<br><span style="color:var(--green)">✅</span> Домашние вафли · сёмга · тушёные овощи · белок в каждом приёме</div>
+  </div>
+</div>
+
+<!-- SPORT -->
+<div class="section" id="section-sport">
+  <div class="card"><div class="card-title">💪 Тренировки недели</div><div id="sport-tracker"></div></div>
+  <div class="card">
+    <div class="card-title">🚶 Активность сегодня</div>
+    <div class="gi-row"><span class="gi-lbl">Тип</span><div class="gi-opts" id="act-type"><div class="chip" onclick="selChip(this,'act-type','sg')">🏐 Волейбол</div><div class="chip" onclick="selChip(this,'act-type','sg')">🎾 Сквош</div><div class="chip" onclick="selChip(this,'act-type','sg')">💃 Танцы</div><div class="chip" onclick="selChip(this,'act-type','sg')">💪 Силовая</div><div class="chip" onclick="selChip(this,'act-type','sg')">🚶 Прогулка</div><div class="chip" onclick="selChip(this,'act-type','so')">🏠 Видео дома</div><div class="chip" onclick="selChip(this,'act-type','so')">— Не было</div></div></div>
+    <div class="gi-row" style="margin-top:9px"><span class="gi-lbl">Самочувствие</span><div class="gi-opts" id="wfeel"><div class="chip" onclick="selChip(this,'wfeel','sg')">💪 Отлично</div><div class="chip" onclick="selChip(this,'wfeel','so')">😐 Норм</div><div class="chip" onclick="selChip(this,'wfeel','sr')">😓 Тяжело</div></div></div>
+    <div class="gi-row" style="margin-top:9px"><span class="gi-lbl">Спина</span><div class="gi-opts" id="back-s"><div class="chip" onclick="selChip(this,'back-s','sg')">✅ Ок</div><div class="chip" onclick="selChip(this,'back-s','so')">⚠️ Напряжение</div><div class="chip" onclick="selChip(this,'back-s','sr')">🔴 Боль</div></div></div>
+    <textarea class="ta" style="margin-top:9px" id="sport-note" placeholder="Заметки по тренировке..."></textarea>
+    <div class="info-box">💡 Силовые для спины — минимум 2×/нед</div>
+  </div>
+</div>
+
+<!-- SUPPS -->
+<div class="section" id="section-supps">
+  <div class="card"><div class="card-title">💊 Протокол БАДов</div><div id="supps-list"></div></div>
+  <div class="card"><div class="card-title">📝 Заметки</div><textarea class="ta" id="supps-note" placeholder="Как переносятся? Эффекты?"></textarea></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="section" id="section-dash">
+  <div class="card">
+    <div class="card-title">📊 Дашборд — последние 30 дней</div>
+    <div id="dash-content"><div class="empty-state"><span class="ei">📊</span>Данные появятся после первых сохранений.<br>Заполняй дневник каждый день и нажимай «Сохранить».</div></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzlCeEtfxz8iLurN9BXsq6n4tQH5HGyVhuU2xzJ-lMaiN0dD9myM0DTUiP8l_BEEX6gKA/exec';
+
+// ── Date ──
+const days=['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+const months=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+const now=new Date();
+document.getElementById('hDate').textContent=days[now.getDay()]+', '+now.getDate()+' '+months[now.getMonth()]+' '+now.getFullYear();
+
+// ── State ──
+let currentMood=null;
+const foodData={breakfast:[],lunch:[],snack:[],dinner:[]};
+const pendingPhoto={};
+const sStates=Array(7).fill(null);
+const sTog=Array(9).fill(false);
+
+// ── Tabs ──
+function switchTab(id,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('section-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='dash') loadDashboard();
+}
+function goMood(){switchTab('health',document.querySelectorAll('.tab')[1]);}
+
+// ── Mood ──
+const moodE={2:'😔',4:'😕',6:'😐',8:'🙂',10:'😊'};
+function setMood(v,el){
+  currentMood=v;
+  document.querySelectorAll('.mood-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById('hEmoji').textContent=moodE[v];
+  document.getElementById('hScore').textContent=v+'/10';
+}
+
+// ── Chips ──
+function selChip(el,gid,cls){
+  document.querySelectorAll('#'+gid+' .chip').forEach(c=>c.className='chip');
+  el.classList.add(cls);
+}
+function getChip(gid){
+  const s=document.querySelector('#'+gid+' .chip.sg,#'+gid+' .chip.so,#'+gid+' .chip.sr');
+  return s?s.textContent.trim():'';
+}
+
+// ── Work Timeline ──
+const workTasks=[];
+const wStates=[];
+const dotMap={meeting:'dm',focus:'df',urgent:'du',work:'',break:''};
+const cardMap={meeting:'cm',focus:'cf',urgent:'cu',work:'',break:'cb'};
+
+function setWorkTasks(tasks){
+  workTasks.length=0;wStates.length=0;
+  tasks.forEach(t=>{workTasks.push(t);wStates.push(false);});
+  renderWork();
+}
+
+function renderWork(){
+  const tl=document.getElementById('timeline');tl.innerHTML='';
+  const countable=workTasks.filter(t=>t.type!=='break');
+  const done=wStates.filter((s,i)=>s&&workTasks[i].type!=='break').length;
+  const total=countable.length;const pct=total?Math.round(done/total*100):0;
+  document.getElementById('w-done').textContent=done;
+  document.getElementById('w-total').textContent=total;
+  document.getElementById('w-pct').textContent=pct+'%';
+  document.getElementById('prog').style.width=pct+'%';
+  document.getElementById('prog-lbl').textContent=done+' / '+total;
+  workTasks.forEach((t,i)=>{
+    const isDone=wStates[i];
+    const dc=isDone?'dd':(dotMap[t.type]||'');
+    const cc=isDone?'cd':(cardMap[t.type]||'');
+    const bCls=t.badge?(t.badge.includes('⚠️')?'br':t.badge==='встреча'?'bb':'bo'):'';
+    const div=document.createElement('div');div.className='tl-item';
+    div.innerHTML=`<div class="tl-time">${t.time}</div><div class="tl-dot ${dc}"></div><div class="tl-body ${cc}" onclick="toggleWork(${i})"><div class="tl-name">${isDone?'✓ ':''}${t.name}${t.badge?`<span class="badge ${bCls}">${t.badge}</span>`:''}</div><div class="tl-meta">${t.time}–${t.end}${t.note?' · '+t.note:''}</div></div>`;
+    tl.appendChild(div);
+  });
+}
+function toggleWork(i){if(workTasks[i].type==='break')return;wStates[i]=!wStates[i];renderWork();}
+
+// Default schedule based on day of week
+const dow=now.getDay(); // 0=sun
+const defaultSchedules={
+  1:[// Monday
+    {time:'10:00',end:'11:00',name:'📊 Планирование + отчёты',type:'work',note:'Утреннее планирование'},
+    {time:'11:00',end:'11:30',name:'📌 Планёрка',type:'meeting',note:'30 мин',badge:'встреча'},
+    {time:'13:00',end:'14:30',name:'🍽 Обед',type:'break',note:''},
+    {time:'20:00',end:'22:00',name:'🏐 Волейбол',type:'focus',badge:'спорт'},
+  ],
+  2:[// Tuesday
+    {time:'07:15',end:'08:00',name:'💪 ЛИС: силовая (дома)',type:'focus',badge:'спорт'},
+    {time:'10:00',end:'19:00',name:'💼 Офис',type:'work',note:''},
+    {time:'13:00',end:'14:00',name:'🍽 Обед',type:'break',note:''},
+    {time:'20:00',end:'21:00',name:'🎾 Сквош',type:'focus',badge:'спорт'},
+  ],
+  3:[// Wednesday
+    {time:'07:15',end:'08:00',name:'💪 ЛИС: силовая (дома)',type:'focus',badge:'спорт'},
+    {time:'10:00',end:'19:00',name:'💼 Офис',type:'work',note:''},
+    {time:'13:00',end:'14:00',name:'🍽 Обед',type:'break',note:''},
+    {time:'19:30',end:'21:00',name:'💃 Танцы',type:'focus',badge:'спорт'},
+  ],
+  4:[// Thursday
+    {time:'07:15',end:'08:00',name:'💪 ЛИС: силовая (дома)',type:'focus',badge:'спорт'},
+    {time:'10:00',end:'19:00',name:'💼 Офис',type:'work',note:''},
+    {time:'13:00',end:'14:00',name:'🍽 Обед',type:'break',note:''},
+    {time:'19:30',end:'20:00',name:'🚶 Прогулка',type:'work',note:'для себя'},
+    {time:'20:00',end:'20:20',name:'🧺 Мелкий быт',type:'work',note:''},
+    {time:'20:30',end:'21:10',name:'🍲 Готовка',type:'work',note:'середина недели'},
+  ],
+  5:[// Friday
+    {time:'07:15',end:'08:00',name:'💪 ЛИС: силовая (дома)',type:'focus',badge:'спорт'},
+    {time:'10:00',end:'19:00',name:'💼 Офис',type:'work',note:''},
+    {time:'11:00',end:'11:30',name:'📌 Ван-ту-ван',type:'meeting',badge:'встреча'},
+    {time:'13:00',end:'14:00',name:'🍽 Обед',type:'break',note:''},
+    {time:'17:30',end:'18:00',name:'📌 Планёрка',type:'meeting',badge:'встреча'},
+    {time:'19:30',end:'21:00',name:'🎙 Мой проект',type:'focus',badge:'проект'},
+  ],
+  6:[// Saturday
+    {time:'10:00',end:'12:00',name:'🧹 Уборка',type:'work',note:''},
+    {time:'12:00',end:'13:00',name:'💪 Силовая (спина)',type:'focus',badge:'спорт'},
+  ],
+  0:[// Sunday
+    {time:'11:00',end:'13:00',name:'🛒 Заказ продуктов',type:'work',note:''},
+    {time:'14:00',end:'16:00',name:'🍲 Готовка на неделю',type:'work',note:''},
+  ],
+};
+setWorkTasks(defaultSchedules[dow]||[]);
+
+// ── Personal tasks ──
+const pTasks=[];
+function addPersonal(){
+  const inp=document.getElementById('personal-inp');
+  const t=inp.value.trim();if(!t)return;
+  pTasks.push({text:t,done:false});inp.value='';renderPersonal();
+}
+function renderPersonal(){
+  const c=document.getElementById('personal-tasks');c.innerHTML='';
+  pTasks.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='task-item'+(t.done?' done':'');
+    d.onclick=()=>{pTasks[i].done=!pTasks[i].done;renderPersonal();};
+    d.innerHTML=`<div class="task-check">${t.done?'✓':''}</div><div class="task-txt">${t.text}</div>`;
+    c.appendChild(d);
+  });
+}
+
+// ── Water ──
+let wf=0;
+const wt=document.getElementById('waterTrack');
+for(let i=0;i<8;i++){
+  const c=document.createElement('div');c.className='w-cup';c.textContent='💧';c.dataset.i=i;
+  c.onclick=function(){wf=wf===+this.dataset.i+1?+this.dataset.i:+this.dataset.i+1;updateWater();};
+  wt.appendChild(c);
+}
+function updateWater(){
+  document.querySelectorAll('.w-cup').forEach((c,i)=>c.classList.toggle('filled',i<wf));
+  document.getElementById('wLbl').textContent=(wf*250)+' мл из 2000 мл';
+  document.getElementById('wProg').style.width=Math.min(wf/8*100,100)+'%';
+  document.getElementById('w-water').textContent=wf;
+}
+updateWater();
+
+// ── Sport ──
+const schedule=[
+  {day:'Понедельник',act:'🏐 Волейбол',time:'20:00–22:00'},
+  {day:'Вторник',act:'🎾 Сквош',time:'20:00–21:00'},
+  {day:'Среда',act:'💪 Силовая + 💃 Танцы',time:'07:15 / 19:30'},
+  {day:'Четверг',act:'💚 Лёгкость / ЛИС',time:'07:15'},
+  {day:'Пятница',act:'💪 Ноги и ягодицы (ЛИС)',time:'07:15'},
+  {day:'Суббота',act:'💪 Силовая (спина)',time:'утро'},
+  {day:'Воскресенье',act:'🌿 Отдых',time:''},
+];
+const todayDow=(now.getDay()+6)%7;
+const sc=document.getElementById('sport-tracker');
+schedule.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='sport-day';
+  d.innerHTML=`<div><div class="sp-name">${s.day}${i===todayDow?'<span class="badge bb" style="margin-left:5px">сегодня</span>':''}</div><div class="sp-act">${s.act}${s.time?' · '+s.time:''}</div></div><div class="sp-btns"><div class="sp-btn" onclick="setSport(${i},'done',this)">✅</div><div class="sp-btn" onclick="setSport(${i},'alt',this)">🔄</div><div class="sp-btn" onclick="setSport(${i},'skip',this)">❌</div></div>`;
+  sc.appendChild(d);
+});
+function setSport(i,st,el){
+  sStates[i]=st;
+  el.closest('.sp-btns').querySelectorAll('.sp-btn').forEach(b=>b.className='sp-btn');
+  el.classList.add(st);
+}
+
+// ── Food ──
+function handlePhoto(ev,meal){const f=ev.target.files[0];if(!f)return;pendingPhoto[meal]=URL.createObjectURL(f);}
+function addFood(meal){
+  const note=document.getElementById('fn-'+meal).value.trim()||'Приём пищи';
+  const gi=document.getElementById('fg-'+meal).value;
+  const photo=pendingPhoto[meal]||null;
+  foodData[meal].push({note,gi,photo});delete pendingPhoto[meal];
+  document.getElementById('fn-'+meal).value='';document.getElementById('fg-'+meal).value='';
+  renderFood(meal);
+}
+function removeFood(meal,i){foodData[meal].splice(i,1);renderFood(meal);}
+function renderFood(meal){
+  const c=document.getElementById('food-'+meal);c.innerHTML='';
+  const giMap={ок:{cls:'fgok',lbl:'✅ ЖКТ ок'},дискомфорт:{cls:'fgwarn',lbl:'⚠️ дискомфорт'},плохо:{cls:'fgbad',lbl:'🔴 плохо'}};
+  foodData[meal].forEach((e,i)=>{
+    const g=giMap[e.gi]||null;
+    const d=document.createElement('div');d.className='food-entry';
+    d.innerHTML=`<div class="food-photo">${e.photo?`<img src="${e.photo}">`:'🍽'}</div><div style="flex:1"><div class="food-n">${e.note}</div>${g?`<div class="food-g"><span class="food-gb ${g.cls}">${g.lbl}</span></div>`:''}</div><div class="food-del" onclick="removeFood('${meal}',${i})">✕</div>`;
+    c.appendChild(d);
+  });
+}
+
+// ── Supps ──
+const supps=[
+  {n:'Коллаген',d:'1 ст.л.',t:'⏰ За 30 мин до завтрака',w:false},
+  {n:'Витамин D3+K2',d:'5000 МЕ',t:'🍳 С завтраком',w:false},
+  {n:'Ассимилятор (ферменты)',d:'1 табл × 3',t:'🍳 Завтрак / Обед / Ужин',w:false},
+  {n:'Метабиотик',d:'5 мл × 2',t:'🍳 Утром + 🌙 Ужин',w:false},
+  {n:'Kelp (йод)',d:'1–2 табл ⚠️',t:'🍳 С завтраком',w:true},
+  {n:'Хлорофилл',d:'1 ч.л.',t:'🌙 За 60 мин до ужина',w:false},
+  {n:'Магний глицинат',d:'200–300 мг',t:'😴 На ночь',w:false},
+  {n:'Медь',d:'по инструкции',t:'📋 Курс 2–3 мес',w:false},
+  {n:'Артишок',d:'по инструкции',t:'📋 Курс 2 мес',w:false},
+];
+const sl=document.getElementById('supps-list');
+supps.forEach((s,i)=>{
+  const d=document.createElement('div');d.className='supp-row';
+  d.innerHTML=`<div><div class="supp-n">${s.n} <span style="font-size:.7em;color:var(--muted);font-weight:400">${s.d}</span>${s.w?'<span class="badge-warn">⚠️ доза!</span>':''}</div><div class="supp-t">${s.t}</div></div><div class="toggle" id="tg-${i}" onclick="togSupp(${i})"></div>`;
+  sl.appendChild(d);
+});
+function togSupp(i){sTog[i]=!sTog[i];document.getElementById('tg-'+i).classList.toggle('on',sTog[i]);}
+
+// ── SAVE ──
+async function saveDay(){
+  const btn=document.getElementById('saveBtn');
+  const status=document.getElementById('saveStatus');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spin"></span>Сохраняю...';
+  status.className='save-status';
+  status.textContent='Отправляю...';
+
+  const d=now;
+  const dateStr=`${d.getDate().toString().padStart(2,'0')}.${(d.getMonth()+1).toString().padStart(2,'0')}.${d.getFullYear()}`;
+  const row=[
+    dateStr,
+    days[d.getDay()],
+    currentMood||'',
+    getChip('energy'),
+    document.getElementById('sleep-h').value||'',
+    getChip('sleep-q'),
+    getChip('gi-bloat'),
+    getChip('gi-stool'),
+    getChip('gi-gas'),
+    getChip('gi-pain'),
+    document.getElementById('gi-note').value||'',
+    getChip('act-type'),
+    sStates[todayDow]==='done'?'✅':sStates[todayDow]==='alt'?'🔄':sStates[todayDow]==='skip'?'❌':'',
+    getChip('back-s'),
+    document.getElementById('sport-note').value||'',
+    wf,
+    foodData.breakfast.map(f=>f.note).join(', '),
+    foodData.lunch.map(f=>f.note).join(', '),
+    foodData.snack.map(f=>f.note).join(', '),
+    foodData.dinner.map(f=>f.note).join(', '),
+    foodData.breakfast.map(f=>f.gi).filter(Boolean).join(', '),
+    foodData.lunch.map(f=>f.gi).filter(Boolean).join(', '),
+    foodData.dinner.map(f=>f.gi).filter(Boolean).join(', '),
+    supps.filter((_,i)=>sTog[i]).map(s=>s.n).join(', '),
+    document.getElementById('symptoms').value||'',
+    document.getElementById('day-notes').value||'',
+  ];
+
+  try {
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({row}),
+    });
+    const text = await resp.text();
+    if(resp.ok){
+      status.className='save-status ok';
+      status.textContent='✅ Сохранено! '+new Date().toLocaleTimeString('ru-RU');
+      btn.innerHTML='✅ Сохранено';
+      setTimeout(()=>{btn.innerHTML='Сохранить';btn.disabled=false;},3000);
+    } else {
+      throw new Error('Ошибка сервера');
+    }
+  } catch(e){
+    status.className='save-status err';
+    status.textContent='❌ '+e.message;
+    btn.innerHTML='Повторить';
+    btn.disabled=false;
+  }
+}
+
+// ── DASHBOARD ──
+async function loadDashboard(){
+  const el=document.getElementById('dash-content');
+  el.innerHTML='<div class="empty-state"><span class="ei">⏳</span>Загружаю данные...</div>';
+  try {
+    const resp=await fetch(SCRIPT_URL+'?action=get');
+    const data=await resp.json();
+    if(!data.rows||data.rows.length===0){
+      el.innerHTML='<div class="empty-state"><span class="ei">📊</span>Данные появятся после первых сохранений.</div>';
+      return;
+    }
+    renderDashboard(data.rows);
+  } catch(e){
+    el.innerHTML='<div class="empty-state"><span class="ei">❌</span>Не удалось загрузить данные.<br>'+e.message+'</div>';
+  }
+}
+
+function renderDashboard(rows){
+  // rows: array of arrays, row[0]=date, [2]=mood, [4]=sleep_h, [5]=sleep_q, [6]=bloat, [12]=sport, [15]=water
+  const last30=rows.slice(-30);
+  const moods=last30.map(r=>parseFloat(r[2])).filter(v=>!isNaN(v));
+  const sleeps=last30.map(r=>parseFloat(r[4])).filter(v=>!isNaN(v));
+  const waters=last30.map(r=>parseFloat(r[15])).filter(v=>!isNaN(v));
+  const sportDone=last30.filter(r=>r[12]==='✅'||r[12]==='🔄').length;
+  const bloatGood=last30.filter(r=>r[6]&&r[6].includes('Нет')).length;
+  const avgMood=moods.length?(moods.reduce((a,b)=>a+b,0)/moods.length).toFixed(1):'—';
+  const avgSleep=sleeps.length?(sleeps.reduce((a,b)=>a+b,0)/sleeps.length).toFixed(1):'—';
+  const avgWater=waters.length?Math.round(waters.reduce((a,b)=>a+b,0)/waters.length):'—';
+
+  const el=document.getElementById('dash-content');
+  el.innerHTML='';
+
+  const grid=document.createElement('div');
+  grid.className='dash-grid';
+
+  // Mood card
+  const mc=document.createElement('div');mc.className='dash-card';
+  mc.innerHTML=`<h3>🌿 Настроение</h3><span class="dash-val">${avgMood}</span><div class="dash-sub">среднее за 30 дней</div>`;
+  grid.appendChild(mc);
+
+  // Sleep card
+  const sc2=document.createElement('div');sc2.className='dash-card';
+  sc2.innerHTML=`<h3>🌙 Сон</h3><span class="dash-val">${avgSleep}<span style="font-size:.5em"> ч</span></span><div class="dash-sub">среднее за 30 дней</div>`;
+  grid.appendChild(sc2);
+
+  // Sport card
+  const spc=document.createElement('div');spc.className='dash-card';
+  spc.innerHTML=`<h3>💪 Спорт</h3><span class="dash-val">${sportDone}</span><div class="dash-sub">тренировок за 30 дней</div>`;
+  grid.appendChild(spc);
+
+  // Water card
+  const wc=document.createElement('div');wc.className='dash-card';
+  wc.innerHTML=`<h3>💧 Вода</h3><span class="dash-val">${avgWater}<span style="font-size:.45em"> ст</span></span><div class="dash-sub">стаканов в среднем</div>`;
+  grid.appendChild(wc);
+
+  // GI card
+  const gic=document.createElement('div');gic.className='dash-card full-width';
+  const bloatPct=last30.length?Math.round(bloatGood/last30.length*100):0;
+  gic.innerHTML=`<h3>🫁 ЖКТ — дни без вздутия</h3><span class="dash-val">${bloatGood}<span style="font-size:.45em"> / ${last30.length}</span></span><div class="dash-sub">${bloatPct}% дней без вздутия за последние 30 дней</div><div class="prog-bar" style="margin-top:10px"><div class="prog-fill" style="width:${bloatPct}%;background:${bloatPct>=70?'var(--green)':bloatPct>=50?'var(--orange)':'var(--red)'}"></div></div>`;
+  grid.appendChild(gic);
+
+  // Mood chart last 7 days
+  const last7=last30.slice(-7);
+  const chart=document.createElement('div');chart.className='dash-card full-width';
+  let chartHtml='<h3>📈 Настроение — последние 7 дней</h3>';
+  last7.forEach(r=>{
+    const v=parseFloat(r[2]);
+    const pct=isNaN(v)?0:v/10*100;
+    const color=v>=7?'var(--green)':v>=5?'var(--orange)':'var(--red)';
+    const label=r[0]?r[0].split('.').slice(0,2).join('/'):'-';
+    chartHtml+=`<div class="chart-bar-row"><div class="chart-bar-label" style="width:36px;font-size:.65em">${label}</div><div class="chart-bar-wrap"><div class="chart-bar-fill" style="width:${pct}%;background:${color}"></div></div><div class="chart-bar-val">${isNaN(v)?'—':v}</div></div>`;
+  });
+  chart.innerHTML=chartHtml;
+  grid.appendChild(chart);
+
+  el.appendChild(grid);
+}
+</script>
+</body>
+</html>
